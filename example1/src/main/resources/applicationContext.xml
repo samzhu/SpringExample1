@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+      http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context-4.0.xsd
+      http://www.springframework.org/schema/aop
+      http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+      http://www.springframework.org/schema/tx
+      http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<context:annotation-config />
+	<!-- 掃描元件但排除控制器 -->
+	<context:component-scan base-package="com.mitake.">
+		<context:exclude-filter type="regex" expression=".*controller"/>
+	</context:component-scan>
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+		<property name="url"
+			value="jdbc:mysql://192.168.200.105:3306/mydb?useUnicode=true&amp;characterEncoding=UTF-8">
+		</property>
+		<property name="username" value="root"></property>
+		<property name="password" value="1qaz2wsx"></property>
+	</bean>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.MySQLDialect
+				</prop>
+			</props>
+		</property>
+		<!-- 使用自動掃描 -->
+		<property name="packagesToScan" value="com.mitake.entity" />
+		<!-- 
+		<property name="annotatedClasses">
+			<list>
+				<value>joow.entity.Userfriend</value>
+				<value>joow.entity.Boardrep</value>
+				<value>joow.entity.Userdetail</value>
+				<value>joow.entity.Userbasic</value>
+				<value>joow.entity.Category</value>
+				<value>joow.entity.Comimg</value>
+				<value>joow.entity.Token</value>
+				<value>joow.entity.Uservita</value>
+				<value>joow.entity.Board</value>
+				<value>joow.entity.Boardlatest</value>
+			</list>
+		</property>
+		 -->
+	</bean>
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+</beans>
