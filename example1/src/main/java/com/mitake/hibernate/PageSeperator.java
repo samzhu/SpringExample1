@@ -11,6 +11,11 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 
+/**
+ * 分頁物件
+ * @author samzhu
+ *
+ */
 public class PageSeperator extends BaseHibernateDAO implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	private int totalpages;//總頁數

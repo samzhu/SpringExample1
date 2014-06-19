@@ -5,22 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-
-import joow.comm.HeaderLocal;
-import joow.component.BoardCreate;
-import joow.component.RqJson;
-import joow.component.UserLogin;
-import joow.customeditor.UserbasicEditor;
-import joow.entity.Board;
-import joow.entity.Userbasic;
-import joow.entity.Userdetail;
-import joow.hibernate.PageSeperator;
-import joow.service.BoardService;
-import joow.service.UserService;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,151 +21,50 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.mitake.component.*;
+import com.mitake.entity.User;
+import com.mitake.service.*;
+
 /**
  * 看板控制器
  * @author SAM
  *
  */
 @Controller
-@RequestMapping("board")
+@RequestMapping("rest")
 public class UserController {
-	@Autowired
-	private BoardService boardService;
 	@Autowired
 	private UserService userService;
 	
-	
-	/**
-	 * 新增
-	 * @param boardadd
-	 * @return
-	 */
 	@ResponseBody
-	@RequestMapping(value="/",method={RequestMethod.POST},produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> create(@RequestBody final BoardCreate boardcreate){
-		//log.debug(this.getClass().getSimpleName()+"."+Thread.currentThread().getStackTrace()[1].getMethodName());
-		Map<String, Object> map = null;
-		Board board = boardcreate.getBoard();
-		HeaderLocal.set(boardcreate.getRqheader());
-		try {
-			boardService.create(board);
-			map = new HashMap<String, Object>();
-			map.put("prc", "1");
-			map.put("msg", "新增成功");
-			map.put("boardid", board.getBoardid());
-			return map;
-		} catch (Exception e) {
-			e.printStackTrace();
-			//log.error("", e);
-			map = new HashMap<String, Object>();
-			map.put("prc", "0");
-			map.put("msg", "新增失敗("+e.getMessage()+")");
-			return map;
-		}
-	}
-	
-	/**
-	 * 取出單一筆文章
-	 * @param boardid
-	 * @param rqjson
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value="/{boardid}",method={RequestMethod.GET},produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> get(
-			@PathVariable("boardid") Long boardid,
-			@RequestBody final RqJson rqjson){
-		//log.debug(this.getClass().getSimpleName()+"."+Thread.currentThread().getStackTrace()[1].getMethodName());
-		Map<String, Object> map = null;
-		HeaderLocal.set(rqjson.getRqheader());
-		Board board = null;
-		try {
-			board = boardService.find(boardid);
-			map = new HashMap<String, Object>();
-			map.put("prc", "1");
-			map.put("msg", "新增成功");
-			map.put("board", board);
-			return map;
-		} catch (Exception e) {
-			e.printStackTrace();
-			//log.error("", e);
-			map = new HashMap<String, Object>();
-			map.put("prc", "0");
-			map.put("msg", "讀取失敗("+e.getMessage()+")");
-			return map;
-		}
-	}
-	
-	/**
-	 * 尋找文章
-	 * @param rqjson
-	 * @return
-	 */
-	@ResponseBody
-	@RequestMapping(value="/",method={RequestMethod.GET},produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map<String, Object> find(
-			@RequestBody final RqJson rqjson){
-		//log.debug(this.getClass().getSimpleName()+"."+Thread.currentThread().getStackTrace()[1].getMethodName());
-		Map<String, Object> map = null;
-		HeaderLocal.set(rqjson.getRqheader());
-		List<Board> boardlist = null;
-		try {
-			//board = boardService.find(boardid);
-			map = new HashMap<String, Object>();
-			map.put("prc", "1");
-			map.put("msg", "讀取成功");
-			map.put("boardlist", boardlist);
-			return map;
-		} catch (Exception e) {
-			e.printStackTrace();
-			//log.error("", e);
-			map = new HashMap<String, Object>();
-			map.put("prc", "0");
-			map.put("msg", "讀取失敗("+e.getMessage()+")");
-			return map;
-		}
-	}
-	
-	/**
-	 * 取出最新文章編號
-	 * @param pagerows
-	 * @param currentpage
-	 * @return
-	 */
-	@ResponseBody
-	@SuppressWarnings("finally")
-	@RequestMapping(value="latest",method={RequestMethod.GET},produces=MediaType.APPLICATION_JSON_VALUE)
-	public Map latest(
-			@RequestParam(value="pagerows",required=false)Integer pagerows,
-			@RequestParam(value="currentpage",required=false)Integer currentpage
+	@RequestMapping(value="/BOK508CService",method={RequestMethod.POST},produces=MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> create(
+			@Valid @RequestBody final Bok508rq bok508rq,//@Valid 將對此物件做基於註解形式的資料驗證
+			BindingResult bindingResult//驗證結果
 			){
-		//log.debug(this.getClass().getSimpleName()+"."+Thread.currentThread().getStackTrace()[1].getMethodName());
 		Map<String, Object> map = new HashMap<String, Object>();
+		CommonHeader commonHeader = bok508rq.getRqheader();
+		Bok508CRQBody bok508crqbody = bok508rq.getBok508crqbody();
+		Bok508CRSBody bok508crsbody = new Bok508CRSBody();
 		try {
-			PageSeperator pageseperator = new PageSeperator();
-			//pageseperator.setParams(params);
-			pageseperator.setCurrentpage(currentpage);
-			pageseperator.setPagerows(pagerows);
-			//pageseperator.setSort(sort);
-			//pageseperator.setOrder(order);
-			//muserservice.query(pageseperator);
-			map.put("prc", "1");
-			map.put("msg", "搜尋成功");
-			map.put("totalpages", pageseperator.getTotalpages());
-			map.put("totalcount", pageseperator.getTotalcount());
-			map.put("currentpage", pageseperator.getCurrentpage());
-			map.put("pagerows", pageseperator.getPagerows());
-			map.put("resultlist", pageseperator.getResultlist());
+			//資料驗證是否有錯
+			if (bindingResult.hasErrors()) {
+				commonHeader.setReturnCode("9999");
+				commonHeader.setReturnMsg("資料驗證錯誤");
+			}else{
+				userService.create(bok508crqbody);
+				commonHeader.setReturnCode("0000");
+				commonHeader.setReturnMsg("交易成功");
+			}
+			map.put("rsheader", commonHeader);
+			map.put("bok508crsbody", bok508crsbody);
+			return map;
 		} catch (Exception e) {
-			e.printStackTrace();
-			//log.error("", e);
-			map = new HashMap<String, Object>();
-			map.put("prc", "0");
-			map.put("msg", "註冊失敗("+e.getMessage()+")");
-		}finally{
+			commonHeader.setReturnCode("xxxx");
+			commonHeader.setReturnMsg("無法預期錯誤");
+			map.put("rsheader", commonHeader);
+			map.put("bok508crsbody", bok508crsbody);
 			return map;
 		}
 	}
-	
-	
 }
