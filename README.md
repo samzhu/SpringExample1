@@ -16,6 +16,13 @@ SpringExample1
   使用Hibernate的CurrentSession，生命週期由Hibernate控制，但是這樣必須添加@Transactional()，
   是否連查詢都會開交易控制這段要確認會不會有效能問題
 
+  流程概念大概是這樣
+  Controller - Validator 
+     |
+  Service - Transactional
+    |  \
+   Dao Dao
+   
   參考來源
   http://langmnm.iteye.com/blog/2078439
   http://blog.csdn.net/wdyr321/article/details/17129869
